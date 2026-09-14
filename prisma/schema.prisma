@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  niche     String?  @default("tutor")
+  currency  String   @default("RUB")
+  timezone  String   @default("Europe/Moscow")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions  Session[]
+  students  Student[]
+  lessons   Lesson[]
+  payments  Payment[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Student {
+  id           String   @id @default(cuid())
+  userId       String
+  name         String
+  contactPhone String?
+  contactEmail String?
+  subject      String?
+  baseRate     Int      @default(1000)
+  status       String   @default("active") // active, paused, archived
+  notes        String?
+  startDate    DateTime @default(now())
+  customFields String?  // JSON field for flexibility
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessons  Lesson[]
+  payments Payment[]
+
+  @@index([userId])
+  @@map("students")
+}
+
+model Lesson {
+  id                 String   @id @default(cuid())
+  userId             String
+  studentId          String
+  date               DateTime
+  startTime          String
+  durationMinutes    Int      @default(60)
+  price              Int
+  status             String   @default("scheduled") // scheduled, completed, cancelled, rescheduled
+  isRecurring        Boolean  @default(false)
+  recurrenceGroupId  String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  student  Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  payments PaymentLesson[]
+
+  @@index([userId])
+  @@index([studentId])
+  @@index([date])
+  @@map("lessons")
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  userId      String
+  studentId   String
+  amount      Int
+  paymentDate DateTime @default(now())
+  method      String   @default("cash") // cash, transfer, card
+  comment     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  student  Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  lessons  PaymentLesson[]
+
+  @@index([userId])
+  @@index([studentId])
+  @@map("payments")
+}
+
+model PaymentLesson {
+  id        String  @id @default(cuid())
+  paymentId String
+  lessonId  String
+  amount    Int
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  lesson  Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([paymentId, lessonId])
+  @@map("payment_lessons")
+}

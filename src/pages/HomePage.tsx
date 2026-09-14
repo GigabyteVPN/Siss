@@ -1,13 +1,24 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Truck, Shield, RotateCcw, Star, Sparkles, Zap, Gift, Crown, Gem } from 'lucide-react';
+import { ArrowRight, Truck, Shield, RotateCcw, Star, Sparkles, Zap, Gift, Crown, Gem, Package, CreditCard, Headphones } from 'lucide-react';
 import { products } from '../data/products';
+import { Product } from '../types';
 import ProductCard from '../components/product/ProductCard';
+import ProductModal from '../components/product/ProductModal';
 
 interface HomePageProps {
   onNavigate: (page: string) => void;
 }
 
 export default function HomePage({ onNavigate }: HomePageProps) {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleQuickView = (product: Product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
   const featuredProducts = products.filter(p => p.isBestseller).slice(0, 4);
   const newProducts = products.filter(p => p.isNew).slice(0, 4);
 
@@ -102,8 +113,9 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 + i * 0.1 }}
+                    className="group cursor-default"
                   >
-                    <p className="text-2xl font-black gradient-text">{stat.value}</p>
+                    <p className="text-2xl font-black gradient-text group-hover:scale-110 transition-transform">{stat.value}</p>
                     <p className="text-xs text-white/40 mt-0.5">{stat.label}</p>
                   </motion.div>
                 ))}
@@ -253,7 +265,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
+              <ProductCard key={product.id} product={product} index={index} onQuickView={handleQuickView} />
             ))}
           </div>
         </div>
@@ -349,7 +361,94 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {newProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
+              <ProductCard key={product.id} product={product} index={index} onQuickView={handleQuickView} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trusted Brands */}
+      <section className="py-16 relative border-y border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <p className="text-xs font-black text-white/30 uppercase tracking-[0.3em]">
+              Официальный партнёр ведущих брендов
+            </p>
+          </motion.div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {['BANDAI', 'GOOD SMILE', 'KOTOBUKIYA', 'ALTER', 'MAX FACTORY', 'SENTINEL'].map((brand, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                className="glass rounded-xl py-4 px-6 flex items-center justify-center hover:border-purple-500/20 transition-all cursor-default"
+              >
+                <span className="text-sm font-black text-white/30 hover:text-white/60 tracking-wider transition-colors">
+                  {brand}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="py-24 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Zap className="w-4 h-4 text-yellow-400" />
+                <span className="text-xs font-black text-yellow-400 uppercase tracking-[0.2em]">Просто как 1-2-3</span>
+              </div>
+              <h2 className="text-4xl font-black text-white">
+                Как это <span className="gradient-text">работает</span>
+              </h2>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+            {/* Connecting line */}
+            <div className="hidden md:block absolute top-16 left-[20%] right-[20%] h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+
+            {[
+              { icon: Package, step: '01', title: 'Выбери', desc: 'Найди идеальную фигурку или игрушку в нашем каталоге из 5000+ товаров', color: 'from-purple-500 to-indigo-500' },
+              { icon: CreditCard, step: '02', title: 'Закажи', desc: 'Оформи заказ за 1 минуту. Оплата картой, СБП или при получении', color: 'from-pink-500 to-rose-500' },
+              { icon: Headphones, step: '03', title: 'Получи', desc: 'Быстрая доставка 1-3 дня по России. Premium упаковка в подарок', color: 'from-yellow-500 to-orange-500' },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.15 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -8 }}
+                className="relative glass-card rounded-2xl p-8 text-center group hover:border-purple-500/20 transition-all duration-300"
+              >
+                <div className="relative inline-block mb-6">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity`} />
+                  <div className={`relative w-16 h-16 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center shadow-xl`}>
+                    <item.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 glass rounded-full flex items-center justify-center border border-white/20">
+                    <span className="text-[10px] font-black gradient-text">{item.step}</span>
+                  </div>
+                </div>
+                <h3 className="text-xl font-black text-white mb-2">{item.title}</h3>
+                <p className="text-white/40 text-sm leading-relaxed">{item.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -394,6 +493,57 @@ export default function HomePage({ onNavigate }: HomePageProps) {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="py-24 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="glass-card rounded-3xl p-10 lg:p-16 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-transparent to-pink-600/5" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-purple-500/10 rounded-full blur-[120px]" />
+            
+            <div className="relative">
+              <div className="text-center mb-12">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <Crown className="w-4 h-4 text-yellow-400" />
+                    <span className="text-xs font-black text-yellow-400 uppercase tracking-[0.2em]">Преимущества</span>
+                  </div>
+                  <h2 className="text-4xl font-black text-white">
+                    Почему выбирают <span className="gradient-text">нас</span>
+                  </h2>
+                </motion.div>
+              </div>
+
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  { value: '100%', label: 'Оригинальная продукция', icon: Shield },
+                  { value: '1-3', label: 'Дня доставки', icon: Truck },
+                  { value: '30', label: 'Дней на возврат', icon: RotateCcw },
+                  { value: '24/7', label: 'Поддержка клиентов', icon: Headphones },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ y: -5, scale: 1.02 }}
+                    className="text-center p-6 glass rounded-2xl hover:border-purple-500/20 transition-all duration-300"
+                  >
+                    <item.icon className="w-6 h-6 text-purple-400 mx-auto mb-3" />
+                    <p className="text-3xl font-black gradient-text mb-1">{item.value}</p>
+                    <p className="text-xs text-white/40">{item.label}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -447,6 +597,62 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           </div>
         </div>
       </section>
+
+      {/* FAQ */}
+      <section className="py-24 relative">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-purple-400" />
+                <span className="text-xs font-black text-purple-400 uppercase tracking-[0.2em]">Частые вопросы</span>
+              </div>
+              <h2 className="text-4xl font-black text-white">
+                Ответы на <span className="gradient-text">вопросы</span>
+              </h2>
+            </motion.div>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              { q: 'Все товары оригинальные?', a: 'Да, мы работаем только с официальными дистрибьюторами и гарантируем подлинность каждого товара. На все фигурки предоставляется сертификат оригинальности.' },
+              { q: 'Как быстро доставляете?', a: 'Доставка по Москве — 1 день, по России — 2-3 дня. Для заказов от 5000 ₽ доставка бесплатная. Работаем с СДЭК, Boxberry и Почтой России.' },
+              { q: 'Можно ли вернуть товар?', a: 'Конечно! У вас есть 30 дней на возврат без объяснения причин. Товар должен быть в оригинальной упаковке. Возврат средств в течение 3 рабочих дней.' },
+              { q: 'Есть ли гарантия на фигурки?', a: 'Да, на все фигурки действует гарантия 1 год. Если товар повреждён при доставке или имеет производственный брак — заменим бесплатно.' },
+            ].map((faq, i) => (
+              <motion.details
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="glass-card rounded-2xl overflow-hidden group"
+              >
+                <summary className="flex items-center justify-between p-6 cursor-pointer hover:bg-white/5 transition-colors list-none">
+                  <h3 className="font-bold text-white text-base pr-4">{faq.q}</h3>
+                  <div className="w-8 h-8 glass rounded-full flex items-center justify-center flex-shrink-0 group-open:rotate-180 transition-transform">
+                    <span className="text-white/50 text-lg">↓</span>
+                  </div>
+                </summary>
+                <div className="px-6 pb-6">
+                  <p className="text-white/50 text-sm leading-relaxed">{faq.a}</p>
+                </div>
+              </motion.details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Product Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }

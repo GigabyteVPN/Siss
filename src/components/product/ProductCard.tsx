@@ -1,18 +1,21 @@
 import { Star, ShoppingCart, Heart, Eye, Sparkles } from 'lucide-react';
 import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
+import { useToast } from '../../context/ToastContext';
 import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
 
 interface ProductCardProps {
   product: Product;
   index: number;
+  onQuickView: (product: Product) => void;
 }
 
-export default function ProductCard({ product, index }: ProductCardProps) {
+export default function ProductCard({ product, index, onQuickView }: ProductCardProps) {
   const { addItem } = useCart();
-  const [isLiked, setIsLiked] = useState(false);
-  const [isAdded, setIsAdded] = useState(false);
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const { showToast } = useToast();
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -25,18 +28,35 @@ export default function ProductCard({ product, index }: ProductCardProps) {
     setMousePos({ x, y });
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!product.inStock) return;
     addItem(product);
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 1800);
+    showToast('success', 'Добавлено в корзину!', product.name);
   };
 
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const added = toggleWishlist(product);
+    showToast(
+      added ? 'success' : 'info',
+      added ? 'Добавлено в избранное ❤️' : 'Удалено из избранного',
+      product.name
+    );
+  };
+
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onQuickView(product);
+  };
+
+  const isLiked = isInWishlist(product.id);
   const discount = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
     : 0;
 
-  const rotateX = isHovered ? (mousePos.y - 0.5) * -10 : 0;
-  const rotateY = isHovered ? (mousePos.x - 0.5) * 10 : 0;
+  const rotateX = isHovered ? (mousePos.y - 0.5) * -8 : 0;
+  const rotateY = isHovered ? (mousePos.x - 0.5) * 8 : 0;
 
   return (
     <motion.div
@@ -47,15 +67,16 @@ export default function ProductCard({ product, index }: ProductCardProps) {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => onQuickView(product)}
       style={{
         transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
         transition: 'transform 0.3s ease-out',
       }}
-      className="group relative card-3d"
+      className="group relative card-3d cursor-pointer"
     >
       {/* Glow effect on hover */}
       <div
-        className="absolute -inset-1 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-purple-500/30 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        className="absolute -inset-1 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         style={{
           background: `radial-gradient(circle at ${mousePos.x * 100}% ${mousePos.y * 100}%, rgba(168, 85, 247, 0.3), transparent 50%)`,
         }}
@@ -98,7 +119,7 @@ export default function ProductCard({ product, index }: ProductCardProps) {
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            onClick={() => setIsLiked(!isLiked)}
+            onClick={handleToggleWishlist}
             className="absolute top-3 right-3 w-9 h-9 glass rounded-full flex items-center justify-center z-10 hover:bg-white/20 transition-colors"
           >
             <Heart
@@ -112,7 +133,8 @@ export default function ProductCard({ product, index }: ProductCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center pb-4">
             <motion.button
               initial={{ y: 20, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
+              whileHover={{ scale: 1.05 }}
+              onClick={handleQuickView}
               className="px-4 py-2 glass-strong rounded-xl text-xs font-bold text-white hover:bg-white/20 transition-colors flex items-center gap-2"
             >
               <Eye className="w-3.5 h-3.5" />
@@ -170,12 +192,10 @@ export default function ProductCard({ product, index }: ProductCardProps) {
               }`}
             >
               <div className={`absolute inset-0 rounded-xl blur-md transition-opacity ${
-                isAdded ? 'bg-green-500 opacity-60' : 'bg-gradient-to-r from-purple-500 to-pink-500 opacity-40 group-hover/btn:opacity-70'
+                'bg-gradient-to-r from-purple-500 to-pink-500 opacity-40 group-hover/btn:opacity-70'
               }`} />
               <div className={`relative p-3 rounded-xl transition-all ${
-                isAdded
-                  ? 'bg-gradient-to-r from-green-500 to-emerald-500'
-                  : product.inStock
+                product.inStock
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600'
                   : 'bg-white/10'
               }`}>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Search, Menu, X, Sparkles, Crown } from 'lucide-react';
+import { ShoppingCart, Search, Menu, X, Sparkles, Crown, Heart } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface HeaderProps {
@@ -10,6 +11,7 @@ interface HeaderProps {
 
 export default function Header({ onNavigate, currentPage }: HeaderProps) {
   const { toggleCart, totalItems } = useCart();
+  const { items: wishlistItems } = useWishlist();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -107,6 +109,27 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
+            {/* Wishlist */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative group hidden sm:block"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative p-3 glass rounded-xl">
+                <Heart className="w-5 h-5 text-white/70 group-hover:text-pink-400 transition-colors" />
+              </div>
+              {wishlistItems.length > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-lg"
+                >
+                  {wishlistItems.length}
+                </motion.span>
+              )}
+            </motion.button>
+
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

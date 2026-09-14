@@ -2,7 +2,9 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { SlidersHorizontal, Grid3X3, LayoutGrid, X, Sparkles } from 'lucide-react';
 import { products, categories } from '../data/products';
+import { Product } from '../types';
 import ProductGrid from '../components/product/ProductGrid';
+import ProductModal from '../components/product/ProductModal';
 
 interface CatalogPageProps {
   filterNew?: boolean;
@@ -13,6 +15,13 @@ export default function CatalogPage({ filterNew }: CatalogPageProps) {
   const [sortBy, setSortBy] = useState('popular');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 15000]);
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleQuickView = (product: Product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
 
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
@@ -212,8 +221,15 @@ export default function CatalogPage({ filterNew }: CatalogPageProps) {
         )}
 
         {/* Products */}
-        <ProductGrid products={filteredProducts} />
+        <ProductGrid products={filteredProducts} onQuickView={handleQuickView} />
       </div>
+
+      {/* Product Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }

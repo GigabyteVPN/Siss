@@ -8,65 +8,56 @@ build/
 .next/
 out/
 
-# Database
-prisma/dev.db
-
 # Environment variables
 .env
 .env.local
 .env.*
 
-# IDE files
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Logs
-*.log
-
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# Temporary files
-*.tmp
+# OS
 .DS_Store
 Thumbs.db
-
-# Python cache (if any Python files exist in project)
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Package manager
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-# Next.js
-.next/cache/
-.next/static/
-.next/server/
-.next/build-manifest.json
-.next/react-loadable-manifest.json
 
 # Prisma
 prisma/migrations/
-prisma/schema.prisma.bak
+prisma/schema.db
 
-# Session files
-sessions/
-*.session
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Next.js
+.next/
+out/
 ```

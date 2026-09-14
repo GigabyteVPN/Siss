@@ -1,5 +1,6 @@
 import { Product } from '../../types';
 import ProductCard from './ProductCard';
+import { motion } from 'framer-motion';
 
 interface ProductGridProps {
   products: Product[];
@@ -8,18 +9,25 @@ interface ProductGridProps {
 export default function ProductGrid({ products }: ProductGridProps) {
   if (products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-24 h-24 bg-purple-50 rounded-full flex items-center justify-center mb-6">
-          <span className="text-4xl">🔍</span>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col items-center justify-center py-24 text-center"
+      >
+        <div className="relative mb-6">
+          <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-xl" />
+          <div className="relative w-24 h-24 glass rounded-full flex items-center justify-center">
+            <span className="text-4xl">🔍</span>
+          </div>
         </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-2">Ничего не найдено</h3>
-        <p className="text-gray-500">Попробуйте изменить параметры поиска или фильтры</p>
-      </div>
+        <h3 className="text-xl font-black text-white mb-2">Ничего не найдено</h3>
+        <p className="text-white/40">Попробуйте изменить параметры поиска или фильтры</p>
+      </motion.div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {products.map((product, index) => (
         <ProductCard key={product.id} product={product} index={index} />
       ))}

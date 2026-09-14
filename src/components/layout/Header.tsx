@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Search, Menu, X, Sparkles, Crown, Heart } from 'lucide-react';
+import { ShoppingCart, Search, Menu, X, Sparkles, Crown, Heart, Sun, Moon, Globe } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface HeaderProps {
@@ -12,6 +14,8 @@ interface HeaderProps {
 export default function Header({ onNavigate, currentPage }: HeaderProps) {
   const { toggleCart, totalItems } = useCart();
   const { items: wishlistItems } = useWishlist();
+  const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -22,10 +26,10 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
   }, []);
 
   const navLinks = [
-    { name: 'Главная', page: 'home' },
-    { name: 'Каталог', page: 'catalog' },
-    { name: 'Новинки', page: 'new' },
-    { name: 'О нас', page: 'about' },
+    { name: t('home'), page: 'home' },
+    { name: t('catalog'), page: 'catalog' },
+    { name: t('new'), page: 'new' },
+    { name: t('about'), page: 'about' },
   ];
 
   return (
@@ -100,7 +104,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                 <Search className="absolute left-4 w-4 h-4 text-white/40 group-focus-within:text-purple-400 transition-colors" />
                 <input
                   type="text"
-                  placeholder="Найти аниме игрушку..."
+                  placeholder={t('search')}
                   className="w-full pl-11 pr-4 py-2.5 glass rounded-xl text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50 transition-all"
                 />
               </div>
@@ -108,7 +112,37 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Language Switcher */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setLanguage(language === 'ru' ? 'en' : 'ru')}
+              className="relative group hidden sm:flex items-center gap-1.5 px-3 py-2 glass rounded-xl text-xs font-bold"
+            >
+              <Globe className="w-4 h-4 text-white/70 group-hover:text-purple-400 transition-colors" />
+              <span className="text-white/70 group-hover:text-white transition-colors uppercase">
+                {language}
+              </span>
+            </motion.button>
+
+            {/* Theme Switcher */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleTheme}
+              className="relative group hidden sm:block"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative p-3 glass rounded-xl">
+                {theme === 'dark' ? (
+                  <Sun className="w-5 h-5 text-white/70 group-hover:text-yellow-400 transition-colors" />
+                ) : (
+                  <Moon className="w-5 h-5 text-white/70 group-hover:text-purple-400 transition-colors" />
+                )}
+              </div>
+            </motion.button>
+
             {/* Wishlist */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -175,9 +209,25 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <input
                   type="text"
-                  placeholder="Поиск..."
+                  placeholder={t('search')}
                   className="w-full pl-11 pr-4 py-3 glass rounded-xl text-sm text-white placeholder-white/30 focus:outline-none"
                 />
+              </div>
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={() => setLanguage(language === 'ru' ? 'en' : 'ru')}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 glass rounded-xl text-sm font-bold"
+                >
+                  <Globe className="w-4 h-4" />
+                  {language.toUpperCase()}
+                </button>
+                <button
+                  onClick={toggleTheme}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 glass rounded-xl text-sm font-bold"
+                >
+                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  {theme === 'dark' ? '☀️' : '🌙'}
+                </button>
               </div>
               {navLinks.map((link) => (
                 <button

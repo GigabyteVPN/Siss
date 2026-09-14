@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
 import { WishlistProvider } from './context/WishlistContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import CartDrawer from './components/cart/CartDrawer';
@@ -123,12 +125,16 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ToastProvider>
-      <WishlistProvider>
-        <CartProvider>
-          <AppContent />
-        </CartProvider>
-      </WishlistProvider>
-    </ToastProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <ToastProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <AppContent />
+            </CartProvider>
+          </WishlistProvider>
+        </ToastProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

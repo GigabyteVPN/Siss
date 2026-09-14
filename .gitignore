@@ -22,42 +22,31 @@ __pycache__/
 env/
 venv/
 .venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.DS_Store
-Thumbs.db
+.ENV
 
 # Logs
 *.log
 
-# Temporary files
-*.tmp
-*.temp
-*~
+# OS generated files
+.DS_Store
+Thumbs.db
 
-# IDE
+# Editor
 .vscode/
 .idea/
 *.swp
 *.swo
+*.tmp
 
-# OS
-.DS_Store
-Thumbs.db
+# Coverage
+coverage/
+htmlcov/
+.coverage
 
-# Prisma
-prisma/migrations/
-prisma/schema.db
-
-# Next.js
-.next/
-out/
+# Cache directories
+.hadolint_cache/
+.mypy_cache/
+.pytest_cache/
+.nyc_output/
+coverage/
 ```
